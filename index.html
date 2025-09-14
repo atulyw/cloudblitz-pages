@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#667eea">
     <title>Trainer Batch Update</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
@@ -63,6 +67,18 @@
                         <label for="course">Course</label>
                         <select id="course" name="course" required>
                             <option value="">Select course</option>
+                            <option value="Cloud DevOps Engineering Course with AI">Cloud DevOps Engineering Course with AI</option>
+                            <option value="Expert in Data Science and Analytics with AI">Expert in Data Science and Analytics with AI</option>
+                            <option value="Integrated Full Stack with Cloud DevOps Engineering course">Integrated Full Stack with Cloud DevOps Engineering course</option>
+                            <option value="Expert in Digital Marketing with AI">Expert in Digital Marketing with AI</option>
+                        </select>
+                    </div>
+
+                    <!-- Subject -->
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <select id="subject" name="subject" required>
+                            <option value="">Select subject</option>
                         </select>
                     </div>
 
@@ -84,9 +100,8 @@
                             <input type="text" id="subtopicSearch" placeholder="Search subtopics..." class="search-input">
                         </div>
 
-                        <!-- Select All/Clear All -->
+                        <!-- Clear All -->
                         <div class="select-all-container">
-                            <button type="button" id="selectAllBtn" class="btn-secondary">Select All</button>
                             <button type="button" id="clearAllBtn" class="btn-secondary">Clear All</button>
                         </div>
 

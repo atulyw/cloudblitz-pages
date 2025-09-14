@@ -13,10 +13,10 @@ const elements = {
     attendancePercent: document.getElementById('attendancePercent'),
     trainingMode: document.getElementById('trainingMode'),
     course: document.getElementById('course'),
+    subject: document.getElementById('subject'),
     courseModule: document.getElementById('courseModule'),
     mainTopicDisplay: document.getElementById('mainTopicDisplay'),
     subtopicSearch: document.getElementById('subtopicSearch'),
-    selectAllBtn: document.getElementById('selectAllBtn'),
     clearAllBtn: document.getElementById('clearAllBtn'),
     subtopicsContainer: document.getElementById('subtopicsContainer'),
     additionalNotes: document.getElementById('additionalNotes'),
@@ -35,8 +35,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Set default date to today
         elements.trainingDate.value = new Date().toISOString().split('T')[0];
         
-        // Load curriculum data from YAML
-        await loadCurriculumData();
+        // Curriculum data will be loaded when course is selected
         
         // Load saved preferences
         loadSavedPreferences();
@@ -46,6 +45,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Set up event listeners
         setupEventListeners();
+        
+        // Mobile-specific optimizations
+        setupMobileOptimizations();
         
         console.log('Application initialized successfully');
     } catch (error) {
@@ -64,8 +66,7 @@ async function loadCurriculumData() {
         const yamlText = await response.text();
         curriculumData = jsyaml.load(yamlText);
         
-        // Populate course dropdown
-        populateCourseDropdown();
+        // Subject dropdown will be populated after YAML data is loaded
         
         console.log('Curriculum data loaded successfully');
     } catch (error) {
@@ -74,17 +75,27 @@ async function loadCurriculumData() {
     }
 }
 
-// Populate course dropdown from YAML data
-function populateCourseDropdown() {
-    elements.course.innerHTML = '<option value="">Select course</option>';
+// Populate subject dropdown based on course selection
+function populateSubjectDropdown() {
+    elements.subject.innerHTML = '<option value="">Select subject</option>';
     
-    if (curriculumData && curriculumData.topics) {
+    const selectedCourse = elements.course.value;
+    
+    // Only load subjects for "Cloud DevOps Engineering Course with AI"
+    if (selectedCourse === 'Cloud DevOps Engineering Course with AI' && curriculumData && curriculumData.topics) {
         curriculumData.topics.forEach(topic => {
             const option = document.createElement('option');
             option.value = topic.name;
             option.textContent = topic.name;
-            elements.course.appendChild(option);
+            elements.subject.appendChild(option);
         });
+    } else if (selectedCourse && selectedCourse !== 'Cloud DevOps Engineering Course with AI') {
+        // For other courses, show placeholder message
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'Subject data will be available soon';
+        option.disabled = true;
+        elements.subject.appendChild(option);
     }
 }
 
@@ -92,6 +103,9 @@ function populateCourseDropdown() {
 function setupEventListeners() {
     // Course change handler
     elements.course.addEventListener('change', handleCourseChange);
+    
+    // Subject change handler
+    elements.subject.addEventListener('change', handleSubjectChange);
     
     // Course module change handler
     elements.courseModule.addEventListener('change', handleCourseModuleChange);
@@ -103,8 +117,7 @@ function setupEventListeners() {
     // Subtopic search
     elements.subtopicSearch.addEventListener('input', filterSubtopics);
     
-    // Select all/Clear all buttons
-    elements.selectAllBtn.addEventListener('click', selectAllSubtopics);
+    // Clear all button
     elements.clearAllBtn.addEventListener('click', clearAllSubtopics);
     
     // Form actions
@@ -122,39 +135,62 @@ function setupEventListeners() {
 }
 
 // Handle course selection change
-function handleCourseChange() {
+async function handleCourseChange() {
     const selectedCourse = elements.course.value;
+    
+    // Clear subject and course module dropdowns
+    elements.subject.innerHTML = '<option value="">Select subject</option>';
     elements.courseModule.innerHTML = '<option value="">Select course module</option>';
     elements.mainTopicDisplay.textContent = '';
     elements.subtopicsContainer.innerHTML = '';
     
-    if (selectedCourse && curriculumData) {
-        const course = curriculumData.topics.find(topic => topic.name === selectedCourse);
-        if (course && course.main_topics) {
-            course.main_topics.forEach(module => {
+    // Load YAML data only for "Cloud DevOps Engineering Course with AI"
+    if (selectedCourse === 'Cloud DevOps Engineering Course with AI') {
+        await loadCurriculumData();
+        populateSubjectDropdown();
+    } else {
+        // Clear curriculum data for other courses
+        curriculumData = null;
+        populateSubjectDropdown();
+    }
+    
+    validateForm();
+}
+
+// Handle subject selection change
+function handleSubjectChange() {
+    const selectedSubject = elements.subject.value;
+    elements.courseModule.innerHTML = '<option value="">Select course module</option>';
+    elements.mainTopicDisplay.textContent = '';
+    elements.subtopicsContainer.innerHTML = '';
+    
+    if (selectedSubject && curriculumData) {
+        const subject = curriculumData.topics.find(topic => topic.name === selectedSubject);
+        if (subject && subject.main_topics) {
+            subject.main_topics.forEach(module => {
                 const option = document.createElement('option');
                 option.value = module.name;
                 option.textContent = module.name;
                 elements.courseModule.appendChild(option);
-            });
+                });
+            }
         }
-    }
     
     validateForm();
 }
 
 // Handle course module selection change
 function handleCourseModuleChange() {
-    const selectedCourse = elements.course.value;
+    const selectedSubject = elements.subject.value;
     const selectedModule = elements.courseModule.value;
     
     elements.mainTopicDisplay.textContent = selectedModule || '';
     elements.subtopicsContainer.innerHTML = '';
     
-    if (selectedCourse && selectedModule && curriculumData) {
-        const course = curriculumData.topics.find(topic => topic.name === selectedCourse);
-        if (course) {
-            const module = course.main_topics.find(m => m.name === selectedModule);
+    if (selectedSubject && selectedModule && curriculumData) {
+        const subject = curriculumData.topics.find(topic => topic.name === selectedSubject);
+        if (subject) {
+            const module = subject.main_topics.find(m => m.name === selectedModule);
             if (module && module.subtopics) {
                 renderSubtopics(module.subtopics);
             }
@@ -162,6 +198,21 @@ function handleCourseModuleChange() {
     }
     
     validateForm();
+}
+
+// Toggle checkbox and update visual state
+function toggleCheckbox(checkbox, item) {
+    checkbox.checked = !checkbox.checked;
+    
+    // Update visual state
+    if (checkbox.checked) {
+        item.classList.add('checked');
+    } else {
+        item.classList.remove('checked');
+    }
+    
+    // Trigger change event
+    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
 }
 
 // Render subtopics as checkboxes
@@ -186,12 +237,38 @@ function renderSubtopics(subtopics) {
         item.appendChild(checkbox);
         item.appendChild(label);
         elements.subtopicsContainer.appendChild(item);
-    });
-    
-    // Add event listeners to new checkboxes
-    const checkboxes = elements.subtopicsContainer.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', validateForm);
+        
+        // Make the entire row clickable
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleCheckbox(checkbox, item);
+        });
+        
+        // Also make label clickable
+        label.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleCheckbox(checkbox, item);
+        });
+        
+        // Add touch events for mobile
+        item.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleCheckbox(checkbox, item);
+        });
+        
+        // Add event listeners to checkboxes
+        checkbox.addEventListener('change', (e) => {
+            validateForm();
+            // Add visual feedback for checked state
+            if (e.target.checked) {
+                item.classList.add('checked');
+            } else {
+                item.classList.remove('checked');
+            }
+        });
     });
 }
 
@@ -208,15 +285,6 @@ function filterSubtopics() {
             item.style.display = 'none';
         }
     });
-}
-
-// Select all subtopics
-function selectAllSubtopics() {
-    const checkboxes = elements.subtopicsContainer.querySelectorAll('input[type="checkbox"]:not([style*="display: none"])');
-    checkboxes.forEach(checkbox => {
-        checkbox.checked = true;
-    });
-    validateForm();
 }
 
 // Clear all subtopics
@@ -256,6 +324,7 @@ function validateForm() {
         { element: elements.totalStudents, name: 'Total Students' },
         { element: elements.trainingMode, name: 'Training Mode' },
         { element: elements.course, name: 'Course' },
+        { element: elements.subject, name: 'Subject' },
         { element: elements.courseModule, name: 'Course Module' }
     ];
     
@@ -346,6 +415,7 @@ function getFormData() {
         totalStudents: parseInt(elements.totalStudents.value),
         trainingMode: elements.trainingMode.value,
         course: elements.course.value,
+        subject: elements.subject.value,
         courseModule: elements.courseModule.value,
         subtopics: selectedSubtopics,
         additionalNotes: elements.additionalNotes.value.trim()
@@ -364,7 +434,8 @@ function buildMessage(data) {
 🧮 Attendance: ${data.presentStudents}/${data.totalStudents} (${attendancePercent}%)
 🧑‍💻 Mode: ${data.trainingMode}
 🎓 Course: ${data.course}
-📚 Module: ${data.courseModule}
+📚 Subject: ${data.subject}
+📖 Module: ${data.courseModule}
 
 ✅ Topics Covered:
 ${subtopicsList}`;
@@ -460,6 +531,7 @@ function storeRecentMessage(data, message) {
         date: data.trainingDate,
         batch: data.batchName,
         course: data.course,
+        subject: data.subject,
         module: data.courseModule,
         subtopicCount: data.subtopics.length,
         message: message,
@@ -508,7 +580,7 @@ function updateRecentMessagesUI() {
         <div class="recent-item">
             <div class="recent-info">
                 <div class="recent-date">${msg.date} - ${msg.batch}</div>
-                <div class="recent-details">${msg.course} | ${msg.module} | ${msg.subtopicCount} topics</div>
+                <div class="recent-details">${msg.course} | ${msg.subject} | ${msg.module} | ${msg.subtopicCount} topics</div>
             </div>
             <div class="recent-actions">
                 <button class="btn-primary btn-small" onclick="copyRecentMessage(${msg.id})">Copy</button>
@@ -580,6 +652,93 @@ function showError(message) {
     }, 5000);
 }
 
+// Mobile-specific optimizations
+function setupMobileOptimizations() {
+    // Prevent zoom on input focus for iOS
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        if (input.type !== 'range' && input.type !== 'checkbox' && input.type !== 'radio') {
+            input.addEventListener('focus', () => {
+                if (window.innerWidth <= 768) {
+                    input.style.fontSize = '16px';
+                }
+            });
+        }
+    });
+    
+    // Improve touch scrolling
+    document.body.style.webkitOverflowScrolling = 'touch';
+    
+    // Add touch feedback for buttons
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(button => {
+        button.addEventListener('touchstart', () => {
+            button.style.transform = 'scale(0.98)';
+        });
+        
+        button.addEventListener('touchend', () => {
+            setTimeout(() => {
+                button.style.transform = '';
+            }, 150);
+        });
+    });
+    
+    // Optimize form interactions for mobile
+    const form = document.getElementById('batchForm');
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Prevent form submission on mobile to avoid page refresh
+        });
+    }
+    
+    // Improve dropdown experience on mobile
+    const selects = document.querySelectorAll('select');
+    selects.forEach(select => {
+        select.addEventListener('change', () => {
+            // Trigger validation after selection
+            setTimeout(validateForm, 100);
+        });
+    });
+    
+    // Add haptic feedback for supported devices
+    if ('vibrate' in navigator) {
+        const actionButtons = document.querySelectorAll('.btn-primary, .btn-whatsapp');
+        actionButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                navigator.vibrate(50); // Short vibration
+            });
+        });
+    }
+    
+    // Improve checkbox interactions on mobile
+    const subtopicItems = document.querySelectorAll('.subtopic-item');
+    subtopicItems.forEach(item => {
+        const checkbox = item.querySelector('input[type="checkbox"]');
+        if (checkbox) {
+            // Add touch feedback
+            item.addEventListener('touchstart', () => {
+                item.style.backgroundColor = '#e2e8f0';
+            });
+            
+            item.addEventListener('touchend', () => {
+                setTimeout(() => {
+                    item.style.backgroundColor = '';
+                }, 150);
+            });
+            
+            // Ensure checkbox is properly focused
+            checkbox.addEventListener('focus', () => {
+                item.style.backgroundColor = '#f0f4f8';
+            });
+            
+            checkbox.addEventListener('blur', () => {
+                item.style.backgroundColor = '';
+            });
+        }
+    });
+}
+
 // Add CSS animation for notifications
 const style = document.createElement('style');
 style.textContent = `
@@ -591,6 +750,21 @@ style.textContent = `
         to {
             transform: translateX(0);
             opacity: 1;
+        }
+    }
+    
+    /* Mobile-specific animations */
+    @media (max-width: 768px) {
+        .btn-primary:active,
+        .btn-secondary:active,
+        .btn-whatsapp:active {
+            transform: scale(0.95) !important;
+            transition: transform 0.1s ease;
+        }
+        
+        .subtopic-item:active {
+            background-color: #e2e8f0;
+            transition: background-color 0.1s ease;
         }
     }
 `;
