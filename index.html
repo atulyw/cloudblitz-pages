@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trainer Batch Update</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <h1>Trainer Batch Update</h1>
+    </header>
+
+    <main class="main">
+        <!-- Form Section -->
+        <section class="form-section">
+            <div class="card">
+                <h2>Training Session Details</h2>
+                <form id="batchForm" class="form">
+                    <!-- Training Date -->
+                    <div class="form-group">
+                        <label for="trainingDate">Training Date</label>
+                        <input type="date" id="trainingDate" name="trainingDate" required>
+                    </div>
+
+                    <!-- Instructor Name -->
+                    <div class="form-group">
+                        <label for="instructorName">Instructor Name</label>
+                        <input type="text" id="instructorName" name="instructorName" placeholder="Enter instructor name" required>
+                    </div>
+
+                    <!-- Batch Name -->
+                    <div class="form-group">
+                        <label for="batchName">Batch Name</label>
+                        <input type="text" id="batchName" name="batchName" placeholder="Enter batch name" required>
+                    </div>
+
+                    <!-- Student Attendance -->
+                    <div class="form-group">
+                        <label>Student Attendance</label>
+                        <div class="attendance-container">
+                            <input type="number" id="presentStudents" name="presentStudents" placeholder="Present" min="0" required>
+                            <span>/</span>
+                            <input type="number" id="totalStudents" name="totalStudents" placeholder="Total" min="0" required>
+                            <span id="attendancePercent" class="attendance-percent"></span>
+                        </div>
+                    </div>
+
+                    <!-- Training Mode -->
+                    <div class="form-group">
+                        <label for="trainingMode">Training Mode</label>
+                        <select id="trainingMode" name="trainingMode" required>
+                            <option value="">Select training mode</option>
+                            <option value="Offline">Offline</option>
+                            <option value="Online">Online</option>
+                            <option value="Hybrid">Hybrid</option>
+                        </select>
+                    </div>
+
+                    <!-- Course -->
+                    <div class="form-group">
+                        <label for="course">Course</label>
+                        <select id="course" name="course" required>
+                            <option value="">Select course</option>
+                        </select>
+                    </div>
+
+                    <!-- Course Module -->
+                    <div class="form-group">
+                        <label for="courseModule">Course Module</label>
+                        <select id="courseModule" name="courseModule" required>
+                            <option value="">Select course module</option>
+                        </select>
+                    </div>
+
+                    <!-- Topics Covered -->
+                    <div class="form-group">
+                        <label>Topics Covered</label>
+                        <div id="mainTopicDisplay" class="main-topic-display"></div>
+                        
+                        <!-- Search Filter -->
+                        <div class="search-container">
+                            <input type="text" id="subtopicSearch" placeholder="Search subtopics..." class="search-input">
+                        </div>
+
+                        <!-- Select All/Clear All -->
+                        <div class="select-all-container">
+                            <button type="button" id="selectAllBtn" class="btn-secondary">Select All</button>
+                            <button type="button" id="clearAllBtn" class="btn-secondary">Clear All</button>
+                        </div>
+
+                        <!-- Subtopics Checkboxes -->
+                        <div id="subtopicsContainer" class="subtopics-container"></div>
+                    </div>
+
+                    <!-- Additional Notes -->
+                    <div class="form-group">
+                        <label for="additionalNotes">Additional Notes</label>
+                        <textarea id="additionalNotes" name="additionalNotes" placeholder="Any additional notes (optional)" rows="3"></textarea>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="form-actions">
+                        <button type="button" id="generateBtn" class="btn-primary">Generate Message</button>
+                        <button type="button" id="resetBtn" class="btn-secondary">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Preview Section -->
+        <section class="preview-section">
+            <div class="card">
+                <h2>Message Preview</h2>
+                <div id="messagePreview" class="message-preview">
+                    <p class="preview-placeholder">Generate a message to see preview</p>
+                </div>
+                
+                <div class="preview-actions" id="previewActions" style="display: none;">
+                    <button type="button" id="copyBtn" class="btn-primary">Copy Message</button>
+                    <button type="button" id="whatsappBtn" class="btn-whatsapp">Share on WhatsApp</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Updates Section -->
+        <section class="recent-section">
+            <div class="card">
+                <h2>Recent Updates</h2>
+                <div id="recentUpdates" class="recent-updates">
+                    <p class="no-recent">No recent updates</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>Note: Curriculum comes from YAML files. Update YAML to change modules/topics.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
