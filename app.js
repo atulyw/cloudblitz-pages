@@ -314,6 +314,7 @@ function calculateAttendance() {
 // Validate form and enable/disable generate button
 function validateForm() {
     const errors = [];
+    const isMobile = window.innerWidth <= 768;
     
     // Required field validation
     const requiredFields = [
@@ -332,8 +333,20 @@ function validateForm() {
         if (!field.element.value.trim()) {
             errors.push(`${field.name} is required`);
             field.element.classList.add('error');
+            
+            // Add mobile-specific error handling
+            if (isMobile) {
+                field.element.style.borderColor = '#e53e3e';
+                field.element.style.boxShadow = '0 0 0 2px rgba(229, 62, 62, 0.2)';
+            }
         } else {
             field.element.classList.remove('error');
+            
+            // Remove mobile-specific error styling
+            if (isMobile) {
+                field.element.style.borderColor = '';
+                field.element.style.boxShadow = '';
+            }
         }
     });
     
@@ -344,14 +357,34 @@ function validateForm() {
     if (present > total) {
         errors.push('Present students cannot be greater than total students');
         elements.presentStudents.classList.add('error');
+        if (isMobile) {
+            elements.presentStudents.style.borderColor = '#e53e3e';
+            elements.presentStudents.style.boxShadow = '0 0 0 2px rgba(229, 62, 62, 0.2)';
+        }
     } else {
         elements.presentStudents.classList.remove('error');
+        if (isMobile) {
+            elements.presentStudents.style.borderColor = '';
+            elements.presentStudents.style.boxShadow = '';
+        }
     }
     
     if (present < 0 || total < 0) {
         errors.push('Attendance numbers must be non-negative');
-        if (present < 0) elements.presentStudents.classList.add('error');
-        if (total < 0) elements.totalStudents.classList.add('error');
+        if (present < 0) {
+            elements.presentStudents.classList.add('error');
+            if (isMobile) {
+                elements.presentStudents.style.borderColor = '#e53e3e';
+                elements.presentStudents.style.boxShadow = '0 0 0 2px rgba(229, 62, 62, 0.2)';
+            }
+        }
+        if (total < 0) {
+            elements.totalStudents.classList.add('error');
+            if (isMobile) {
+                elements.totalStudents.style.borderColor = '#e53e3e';
+                elements.totalStudents.style.boxShadow = '0 0 0 2px rgba(229, 62, 62, 0.2)';
+            }
+        }
     }
     
     // Topics or notes validation
@@ -368,14 +401,39 @@ function validateForm() {
     // Clear previous error messages
     document.querySelectorAll('.error-message').forEach(msg => msg.remove());
     
-    // Show error messages
+    // Show error messages with mobile-friendly styling
     if (errors.length > 0) {
         errors.forEach(error => {
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-message';
             errorDiv.textContent = error;
+            
+            // Add mobile-specific styling
+            if (isMobile) {
+                errorDiv.style.cssText = `
+                    background: #fed7d7;
+                    color: #c53030;
+                    padding: 0.75rem;
+                    border-radius: 6px;
+                    margin: 0.5rem 0;
+                    font-size: 0.9rem;
+                    border-left: 4px solid #e53e3e;
+                    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+                `;
+            }
+            
             elements.form.appendChild(errorDiv);
         });
+        
+        // Scroll to first error on mobile
+        if (isMobile && errors.length > 0) {
+            const firstError = document.querySelector('.error-message');
+            if (firstError) {
+                setTimeout(() => {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            }
+        }
     }
     
     return errors.length === 0;
@@ -654,14 +712,28 @@ function showError(message) {
 
 // Mobile-specific optimizations
 function setupMobileOptimizations() {
+    // Detect mobile device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+    
+    if (!isMobile) return;
+    
     // Prevent zoom on input focus for iOS
     const inputs = document.querySelectorAll('input, select, textarea');
     inputs.forEach(input => {
         if (input.type !== 'range' && input.type !== 'checkbox' && input.type !== 'radio') {
             input.addEventListener('focus', () => {
-                if (window.innerWidth <= 768) {
-                    input.style.fontSize = '16px';
-                }
+                input.style.fontSize = '16px';
+                // Scroll input into view on mobile
+                setTimeout(() => {
+                    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 300);
+            });
+            
+            input.addEventListener('blur', () => {
+                // Reset font size after blur to maintain responsive design
+                setTimeout(() => {
+                    input.style.fontSize = '';
+                }, 100);
             });
         }
     });
@@ -672,14 +744,21 @@ function setupMobileOptimizations() {
     // Add touch feedback for buttons
     const buttons = document.querySelectorAll('button');
     buttons.forEach(button => {
-        button.addEventListener('touchstart', () => {
-            button.style.transform = 'scale(0.98)';
+        button.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            button.style.transform = 'scale(0.95)';
+            button.style.transition = 'transform 0.1s ease';
         });
         
-        button.addEventListener('touchend', () => {
+        button.addEventListener('touchend', (e) => {
+            e.preventDefault();
             setTimeout(() => {
                 button.style.transform = '';
-            }, 150);
+            }, 100);
+        });
+        
+        button.addEventListener('touchcancel', () => {
+            button.style.transform = '';
         });
     });
     
@@ -699,6 +778,13 @@ function setupMobileOptimizations() {
             // Trigger validation after selection
             setTimeout(validateForm, 100);
         });
+        
+        select.addEventListener('focus', () => {
+            // Scroll select into view on mobile
+            setTimeout(() => {
+                select.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        });
     });
     
     // Add haptic feedback for supported devices
@@ -717,14 +803,21 @@ function setupMobileOptimizations() {
         const checkbox = item.querySelector('input[type="checkbox"]');
         if (checkbox) {
             // Add touch feedback
-            item.addEventListener('touchstart', () => {
+            item.addEventListener('touchstart', (e) => {
+                e.preventDefault();
                 item.style.backgroundColor = '#e2e8f0';
+                item.style.transition = 'background-color 0.1s ease';
             });
             
-            item.addEventListener('touchend', () => {
+            item.addEventListener('touchend', (e) => {
+                e.preventDefault();
                 setTimeout(() => {
                     item.style.backgroundColor = '';
                 }, 150);
+            });
+            
+            item.addEventListener('touchcancel', () => {
+                item.style.backgroundColor = '';
             });
             
             // Ensure checkbox is properly focused
@@ -736,6 +829,104 @@ function setupMobileOptimizations() {
                 item.style.backgroundColor = '';
             });
         }
+    });
+    
+    // Improve textarea handling on mobile
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(textarea => {
+        textarea.addEventListener('focus', () => {
+            // Scroll textarea into view on mobile
+            setTimeout(() => {
+                textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        });
+    });
+    
+    // Add mobile-specific keyboard handling
+    document.addEventListener('keydown', (e) => {
+        // Handle Enter key on mobile keyboards
+        if (e.key === 'Enter' && (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT')) {
+            const form = e.target.closest('form');
+            if (form) {
+                const inputs = Array.from(form.querySelectorAll('input, select, textarea'));
+                const currentIndex = inputs.indexOf(e.target);
+                const nextInput = inputs[currentIndex + 1];
+                
+                if (nextInput) {
+                    e.preventDefault();
+                    nextInput.focus();
+                } else {
+                    // If it's the last input, focus the generate button
+                    const generateBtn = document.getElementById('generateBtn');
+                    if (generateBtn && !generateBtn.disabled) {
+                        e.preventDefault();
+                        generateBtn.focus();
+                    }
+                }
+            }
+        }
+    });
+    
+    // Improve mobile scrolling performance
+    let ticking = false;
+    function updateScrollPosition() {
+        // Add any scroll-based optimizations here
+        ticking = false;
+    }
+    
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(updateScrollPosition);
+            ticking = true;
+        }
+    });
+    
+    // Add mobile-specific error handling
+    window.addEventListener('error', (e) => {
+        console.error('Mobile error:', e.error);
+        // Could add mobile-specific error reporting here
+    });
+    
+    // Optimize for mobile performance
+    if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => {
+            // Perform non-critical mobile optimizations
+            optimizeForMobile();
+        });
+    } else {
+        setTimeout(optimizeForMobile, 1000);
+    }
+}
+
+// Additional mobile optimization function
+function optimizeForMobile() {
+    // Lazy load images if any
+    const images = document.querySelectorAll('img[data-src]');
+    if (images.length > 0 && 'IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src;
+                    img.removeAttribute('data-src');
+                    imageObserver.unobserve(img);
+                }
+            });
+        });
+        
+        images.forEach(img => imageObserver.observe(img));
+    }
+    
+    // Preload critical resources
+    const criticalResources = [
+        '/data/cdec-ai-topics.yaml'
+    ];
+    
+    criticalResources.forEach(resource => {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = resource;
+        document.head.appendChild(link);
     });
 }
 
@@ -753,6 +944,17 @@ style.textContent = `
         }
     }
     
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
     /* Mobile-specific animations */
     @media (max-width: 768px) {
         .btn-primary:active,
@@ -765,6 +967,58 @@ style.textContent = `
         .subtopic-item:active {
             background-color: #e2e8f0;
             transition: background-color 0.1s ease;
+        }
+        
+        /* Smooth transitions for mobile */
+        .card {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            transform: scale(1.02);
+            transition: all 0.2s ease;
+        }
+        
+        /* Mobile loading states */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid #667eea;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+    }
+    
+    /* Improved mobile scrollbars */
+    @media (max-width: 768px) {
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 2px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
         }
     }
 `;

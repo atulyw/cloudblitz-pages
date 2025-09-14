@@ -421,43 +421,75 @@ body {
 /* Extra Small Devices (phones, 320px and up) */
 @media (max-width: 575px) {
     .main {
-        padding: 0.75rem;
-        gap: 1rem;
+        padding: 0.5rem;
+        gap: 0.75rem;
+        max-width: 100%;
+        overflow-x: hidden;
     }
     
     .card {
-        padding: 1rem;
+        padding: 0.75rem;
         border-radius: 8px;
+        margin: 0;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .card h2 {
         font-size: 1.1rem;
         margin-bottom: 0.75rem;
+        line-height: 1.3;
+    }
+    
+    .header {
+        padding: 0.75rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
     }
     
     .header h1 {
-        font-size: 1.25rem;
-        padding: 0 0.75rem;
+        font-size: 1.2rem;
+        padding: 0 0.5rem;
+        line-height: 1.2;
+        word-wrap: break-word;
     }
     
     .form {
-        gap: 1rem;
+        gap: 0.75rem;
+    }
+    
+    .form-group {
+        gap: 0.4rem;
+    }
+    
+    .form-group label {
+        font-size: 0.9rem;
+        font-weight: 600;
     }
     
     .form-group input,
     .form-group select,
     .form-group textarea {
-        padding: 0.75rem;
+        padding: 0.875rem;
         font-size: 16px; /* Prevents zoom on iOS */
+        border-radius: 6px;
+        min-height: 48px; /* Larger touch target */
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .form-actions {
         flex-direction: column;
         gap: 0.5rem;
+        margin-top: 1rem;
     }
     
     .form-actions button {
         width: 100%;
+        min-height: 48px;
+        font-size: 1rem;
+        font-weight: 600;
     }
     
     .preview-actions {
@@ -467,6 +499,9 @@ body {
     
     .preview-actions button {
         width: 100%;
+        min-height: 48px;
+        font-size: 1rem;
+        font-weight: 600;
     }
     
     .attendance-container {
@@ -477,86 +512,165 @@ body {
     
     .attendance-container input {
         text-align: left;
+        min-height: 48px;
+    }
+    
+    .attendance-percent {
+        align-self: center;
+        margin-top: 0.5rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
     }
     
     .select-all-container {
         justify-content: center;
+        margin: 0.75rem 0;
     }
     
     .select-all-container button {
         width: auto;
-        min-width: 120px;
+        min-width: 140px;
+        min-height: 44px;
+        padding: 0.75rem 1rem;
     }
     
     .subtopics-container {
-        max-height: 250px;
+        max-height: 300px;
         padding: 0.5rem;
+        border-radius: 6px;
+        -webkit-overflow-scrolling: touch;
     }
     
     .subtopic-item {
-        padding: 0.5rem;
-        min-height: 44px;
-        margin-bottom: 3px;
+        padding: 0.75rem;
+        min-height: 52px;
+        margin-bottom: 4px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
     }
     
     .subtopic-item input[type="checkbox"] {
-        width: 1.25rem;
-        height: 1.25rem;
-        margin-right: 0.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        margin: 0;
+        flex-shrink: 0;
     }
     
     .subtopic-item label {
-        font-size: 0.9rem;
-        line-height: 1.3;
-        padding: 0.25rem 0;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        padding: 0;
+        margin: 0;
+        flex: 1;
     }
     
     .message-preview {
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         padding: 0.75rem;
-        min-height: 120px;
+        min-height: 150px;
+        line-height: 1.5;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     }
     
     .recent-item {
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.5rem;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        min-height: auto;
+    }
+    
+    .recent-info {
+        width: 100%;
+    }
+    
+    .recent-date {
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .recent-details {
+        font-size: 0.8rem;
+        line-height: 1.3;
     }
     
     .recent-actions {
         width: 100%;
-        justify-content: flex-end;
+        justify-content: stretch;
+        gap: 0.5rem;
     }
     
     .recent-actions button {
         flex: 1;
+        min-height: 44px;
+        font-size: 0.9rem;
+    }
+    
+    .search-container {
+        margin-bottom: 0.75rem;
+    }
+    
+    .search-input {
+        padding: 0.75rem;
+        font-size: 16px;
+        min-height: 48px;
+        border-radius: 6px;
+    }
+    
+    .main-topic-display {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin-bottom: 0.75rem;
+    }
+    
+    .footer {
+        padding: 0.75rem;
+        font-size: 0.75rem;
+        line-height: 1.4;
     }
 }
 
 /* Small Devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767px) {
     .main {
+        padding: 0.75rem;
+        gap: 1rem;
+    }
+    
+    .card {
         padding: 1rem;
+    }
+    
+    .header h1 {
+        font-size: 1.3rem;
     }
     
     .form-actions {
         flex-direction: row;
         flex-wrap: wrap;
+        gap: 0.75rem;
     }
     
     .form-actions button {
         flex: 1;
-        min-width: 120px;
+        min-width: 140px;
+        min-height: 48px;
     }
     
     .preview-actions {
         flex-direction: row;
         flex-wrap: wrap;
+        gap: 0.75rem;
     }
     
     .preview-actions button {
         flex: 1;
-        min-width: 120px;
+        min-width: 140px;
+        min-height: 48px;
     }
     
     .select-all-container {
@@ -565,7 +679,43 @@ body {
     
     .select-all-container button {
         width: auto;
-        min-width: 120px;
+        min-width: 140px;
+        min-height: 44px;
+    }
+    
+    .attendance-container {
+        flex-direction: row;
+        gap: 0.75rem;
+        align-items: center;
+    }
+    
+    .attendance-container input {
+        text-align: center;
+        flex: 1;
+    }
+    
+    .attendance-percent {
+        margin-top: 0;
+        align-self: stretch;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .recent-item {
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .recent-actions {
+        width: auto;
+        justify-content: flex-end;
+    }
+    
+    .recent-actions button {
+        flex: none;
+        min-width: 80px;
     }
 }
 
@@ -731,33 +881,46 @@ textarea:focus {
 
 /* Mobile-specific improvements */
 @media (max-width: 768px) {
+    /* Prevent horizontal scrolling */
+    body {
+        overflow-x: hidden;
+        width: 100%;
+    }
+    
     /* Improve touch targets */
     .subtopic-item {
         padding: 0.75rem;
-        min-height: 48px;
+        min-height: 52px;
         margin-bottom: 4px;
+        border-radius: 6px;
+        transition: all 0.2s ease;
     }
     
     .subtopic-item input[type="checkbox"] {
         width: 1.5rem;
         height: 1.5rem;
-        margin-right: 0.75rem;
+        margin: 0;
+        flex-shrink: 0;
     }
     
     .subtopic-item label {
-        font-size: 1rem;
+        font-size: 0.95rem;
         line-height: 1.4;
-        padding: 0.25rem 0;
+        padding: 0;
+        margin: 0;
+        flex: 1;
     }
     
     /* Better spacing for mobile */
     .search-container {
-        margin-bottom: 1.25rem;
+        margin-bottom: 1rem;
     }
     
     .search-input {
         padding: 0.75rem;
         font-size: 16px; /* Prevents zoom on iOS */
+        border-radius: 6px;
+        min-height: 48px;
     }
     
     /* Improve dropdown appearance on mobile */
@@ -767,20 +930,77 @@ textarea:focus {
         background-position: right 0.75rem center;
         background-size: 1rem;
         padding-right: 2.5rem;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
     }
     
     /* Better textarea handling */
     .form-group textarea {
         resize: vertical;
         min-height: 100px;
+        font-family: inherit;
     }
     
     /* Improve message preview on mobile */
+    .message-preview {
+        font-family: 'Courier New', monospace;
+        white-space: pre-wrap;
+        word-break: break-word;
+        overflow-wrap: break-word;
+        line-height: 1.5;
+    }
+    
     .message-preview pre {
         margin: 0;
         white-space: pre-wrap;
         word-break: break-word;
         overflow-wrap: break-word;
+        font-family: inherit;
+    }
+    
+    /* Improve button interactions on mobile */
+    .btn-primary,
+    .btn-secondary,
+    .btn-whatsapp {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+        user-select: none;
+    }
+    
+    /* Better form validation on mobile */
+    .form-group input.error,
+    .form-group select.error,
+    .form-group textarea.error {
+        border-color: #e53e3e;
+        box-shadow: 0 0 0 2px rgba(229, 62, 62, 0.2);
+    }
+    
+    .error-message {
+        background: #fed7d7;
+        color: #c53030;
+        padding: 0.5rem;
+        border-radius: 4px;
+        margin-top: 0.25rem;
+        font-size: 0.85rem;
+        border-left: 3px solid #e53e3e;
+    }
+    
+    /* Improve card shadows on mobile */
+    .card {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        border: 1px solid #e2e8f0;
+    }
+    
+    /* Better header on mobile */
+    .header {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Improve footer on mobile */
+    .footer {
+        margin-top: 1rem;
+        border-top: 1px solid #e2e8f0;
     }
 }
 
