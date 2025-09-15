@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudBlitz EMI Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CloudBlitz Education Finance Calculator</h1>
+            <p class="header-subtitle">Smart EMI Planning for Your Learning Journey</p>
+        </header>
+
+        <div class="calculator-card">
+            <form class="input-form">
+                <div class="student-info-section">
+                    <h3>Student Information</h3>
+                    <div class="form-group">
+                        <label for="studentName">Student Name</label>
+                        <input type="text" id="studentName" name="studentName" placeholder="Enter student name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city" placeholder="Enter city">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="center">Center</label>
+                        <select id="center" name="center">
+                            <option value="">Select Center</option>
+                            <option value="Nagpur">Nagpur</option>
+                            <option value="Kothrud">Kothrud</option>
+                            <option value="Wakad">Wakad</option>
+                            <option value="Chakan">Chakan</option>
+                            <option value="Kharadi">Kharadi</option>
+                            <option value="Nashik">Nashik</option>
+                            <option value="Online">Online</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="course-info-section">
+                    <h3>Course Information</h3>
+                    <div class="form-group">
+                        <label for="courseName">Course Name</label>
+                        <select id="courseName" name="courseName">
+                            <option value="CDEC-AI">CDEC-AI (Cloud DevOps Engineer with AI)</option>
+                            <option value="X-DSAAI">X-DSAAI (Data Science & Analytics with AI)</option>
+                            <option value="AIFS-CDEC">AIFS-CDEC (AI-Integrated Full-Stack)</option>
+                            <option value="X-DMAI">X-DMAI (Digital Marketing with AI)</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="fees-info-section">
+                    <h3>Fee Information</h3>
+                    <div class="form-group">
+                        <label for="totalFee">Total Course Fee (₹)</label>
+                        <input type="number" id="totalFee" name="totalFee" value="90000" min="0">
+                    </div>
+
+                <div class="form-group">
+                    <label for="regularFees">Regular Fees (₹)</label>
+                    <input type="number" id="regularFees" name="regularFees" value="70000" min="0">
+                    <small class="help-text">Fees included in loan calculation</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="payAfterPlacement">Pay After Placement Fees (₹)</label>
+                    <input type="number" id="payAfterPlacement" name="payAfterPlacement" value="20000" min="0">
+                    <small class="help-text">Fees paid after job placement (not included in loan)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="upfront">Upfront Payment (₹)</label>
+                    <input type="number" id="upfront" name="upfront" value="10000" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="discount">Discount (₹)</label>
+                    <input type="number" id="discount" name="discount" value="0" min="0">
+                </div>
+
+                <div class="loan-info-section">
+                    <h3>Loan Information</h3>
+                    <div class="form-group">
+                        <label for="tenure">Loan Tenure (Months)</label>
+                        <select id="tenure" name="tenure">
+                            <option value="">Select Tenure</option>
+                            <option value="18">18 months</option>
+                            <option value="12">12 months</option>
+                            <option value="9">9 months</option>
+                            <option value="6">6 months</option>
+                        </select>
+                    </div>
+                </div>
+            </form>
+
+            <div class="action-buttons">
+                <button class="action-btn print-btn" onclick="printQuote()" id="printBtn">
+                    🖨️ Print Quote
+                </button>
+                <button class="action-btn download-btn" onclick="downloadExcel()" id="downloadBtn">
+                    📊 Download Excel
+                </button>
+                <button class="action-btn pdf-btn" onclick="downloadPDF()" id="pdfBtn">
+                    📄 Download PDF
+                </button>
+            </div>
+
+            <div class="results-card">
+                <h2>Calculation Results</h2>
+                <div class="result-item">
+                    <label>Subvention Rate (%)</label>
+                    <span id="rate">—</span>
+                </div>
+                <div class="result-item">
+                    <label>Loan Amount (₹)</label>
+                    <span id="loanAmount">—</span>
+                </div>
+                <div class="result-item">
+                    <label>Institute Subvention Amount (₹)</label>
+                    <span id="subventionAmount">—</span>
+                </div>
+                <div class="result-item">
+                    <label>Student Monthly EMI (₹)</label>
+                    <span id="emiAmount">—</span>
+                </div>
+            </div>
+
+            <div class="processing-fees-card">
+                <h2>Processing Fee Calculation</h2>
+                <div class="result-item">
+                    <label>Loan Amount (₹)</label>
+                    <span id="processingLoanAmount">—</span>
+                </div>
+                <div class="result-item">
+                    <label>Processing Fee 2% (₹)</label>
+                    <span id="processingFee">—</span>
+                </div>
+                <div class="result-item">
+                    <label>Stamp Duty (₹)</label>
+                    <span id="stampDuty">—</span>
+                </div>
+                <div class="result-item subtotal">
+                    <label>Total (₹)</label>
+                    <span id="processingSubtotal">—</span>
+                </div>
+                <div class="result-item">
+                    <label>GST 18% On Total (₹)</label>
+                    <span id="gstAmount">—</span>
+                </div>
+                <div class="result-item total-fee">
+                    <label>Total Need To Pay Student Proc.Fee (₹)</label>
+                    <span id="totalProcessingFee">—</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terms & Conditions Section -->
+        <div class="terms-section">
+            <div class="terms-toggle">
+                <button class="terms-toggle-btn" onclick="toggleTerms()">
+                    <span class="terms-title">📋 Terms & Conditions</span>
+                    <span class="terms-arrow">▼</span>
+                </button>
+            </div>
+            
+            <div class="terms-content" id="termsContent">
+                <div class="terms-header">
+                    <h2>🔹 Updated Terms & Conditions (with EMI disclaimer)</h2>
+                </div>
+                
+                <div class="terms-body">
+                    <div class="terms-section-item">
+                        <h3>1) Purpose & Scope</h3>
+                        <p>This calculator provides an illustrative no-cost EMI computation based on institute subvention to the lending partner.</p>
+                        <p><strong>Results are indicative only and do not represent an offer, sanction, or approval.</strong></p>
+                    </div>
+
+                    <div class="terms-section-item">
+                        <h3>2) Subvention & No-Cost EMI</h3>
+                        <p>"No-Cost EMI" to the student means ⚡ <strong>CloudBlitz will bear the full interest cost</strong> by paying subvention directly to the bank/NBFC.</p>
+                        <p>Students repay only the principal loan amount in EMIs, without any additional interest burden.</p>
+                    </div>
+
+                    <div class="terms-section-item">
+                        <h3>3) Processing Fees</h3>
+                        <p>A processing fee (%) is charged by the lender on the loan amount.</p>
+                        <p class="warning">⚠️ <strong>This processing fee is payable by the student</strong>, in addition to any upfront payment.</p>
+                        <p>The calculator includes this cost in its computation.</p>
+                    </div>
+
+                    <div class="terms-section-item">
+                        <h3>4) Assumptions & Disclaimers</h3>
+                        <ul>
+                            <li>EMI shown is Loan Amount ÷ Tenure (interest paid by CloudBlitz).</li>
+                            <li>Processing Fee is a student-only cost and is due upfront.</li>
+                            <li class="warning">⚠️ <strong>Important:</strong> The EMI displayed by this calculator is tentative. The final EMI, fees, and charges will be defined by the bank after credit assessment and loan approval.</li>
+                            <li>Taxes or ancillary charges (if any) are not included.</li>
+                        </ul>
+                    </div>
+
+                    <div class="terms-section-item">
+                        <h3>5) Eligibility & Documentation</h3>
+                        <p>Student eligibility, co-applicant requirements, KYC, and bank statement verification are determined by the lender's policies.</p>
+                        <p>Account Aggregator (AA) flow, if used, requires the applicant's OTP consent.</p>
+                    </div>
+
+                    <div class="terms-section-item">
+                        <h3>6) Variations & Changes</h3>
+                        <p>Rates, tenures, processing fees, and policies are subject to change without notice.</p>
+                        <p><strong>Final approval, EMI amount, and charges rest with the lender.</strong></p>
+                    </div>
+
+                    <div class="terms-section-item">
+                        <h3>7) Liability & Disclaimer</h3>
+                        <p>CloudBlitz and its partners are not liable for financial decisions made solely on calculator output.</p>
+                        <p><strong>The bank/NBFC decision is final and binding.</strong></p>
+                    </div>
+
+                    <div class="terms-section-item contact-section">
+                        <h3>8) Contact</h3>
+                        <p>For updated subvention rates, processing fees, and EMI confirmation, contact CloudBlitz Loan Support:</p>
+                        <div class="contact-info">
+                            <a href="mailto:loan.support@cloudblitz.in" class="contact-link">
+                                📧 loan.support@cloudblitz.in
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include libraries for Excel and PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.plugin.autotable.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
